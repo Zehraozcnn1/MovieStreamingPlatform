@@ -1,0 +1,79 @@
+-- DDL (Data Definition Language)
+
+CREATE DATABASE movieplartform;
+USE movieplartform;
+
+-- User Table
+CREATE TABLE User (
+    UserID INT PRIMARY KEY AUTO_INCREMENT,
+    Username VARCHAR(50) UNIQUE NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Password VARCHAR(100) NOT NULL,
+    JoinDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    IsPremium BOOLEAN DEFAULT FALSE
+);
+
+-- Movie Table
+CREATE TABLE Movie (
+    MovieID INT PRIMARY KEY AUTO_INCREMENT,
+    Title VARCHAR(255) NOT NULL,
+    ReleaseYear SMALLINT(4) NOT NULL,
+    Duration SMALLINT NOT NULL CHECK (Duration > 0),
+    ViewCount INT DEFAULT 0,
+    Rating DECIMAL(3,1) DEFAULT 0.0
+);
+
+-- Genre Table
+CREATE TABLE Genre (
+    GenreID INT PRIMARY KEY AUTO_INCREMENT,
+    GenreName VARCHAR(50) NOT NULL UNIQUE
+);
+
+
+-- MovieGenre Table
+CREATE TABLE MovieGenre (
+    MovieID INT,
+    GenreID INT,
+    PRIMARY KEY (MovieID, GenreID),
+    FOREIGN KEY (MovieID) REFERENCES Movie(MovieID) ON DELETE CASCADE,
+    FOREIGN KEY (GenreID) REFERENCES Genre(GenreID) ON DELETE CASCADE
+);
+
+-- Reviews Table
+CREATE TABLE Review (
+    ReviewID INT PRIMARY KEY AUTO_INCREMENT,
+    UserID INT,
+    MovieID INT,
+    Rating DECIMAL(3,1) CHECK (Rating BETWEEN 0.0 AND 10.0),
+    Comment TEXT,
+    ReviewDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (MovieID) REFERENCES Movie(MovieID) ON DELETE CASCADE
+);
+
+-- CastMember Table
+CREATE TABLE CastMember (
+    CastID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255) NOT NULL,
+    Role ENUM('Director', 'Actor') NOT NULL,
+    BirthDate DATE,
+    Nationality VARCHAR(100)
+);
+
+-- Watchlist Table
+CREATE TABLE Watchlist (
+    WatchlistID INT PRIMARY KEY AUTO_INCREMENT,
+    UserID INT,
+    MovieID INT,
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (MovieID) REFERENCES Movie(MovieID) ON DELETE CASCADE
+);
+
+-- MovieCast Table
+CREATE TABLE MovieCast (
+    MovieID INT,
+    CastID INT,
+    PRIMARY KEY (MovieID, CastID),
+    FOREIGN KEY (MovieID) REFERENCES Movie(MovieID) ON DELETE CASCADE,
+    FOREIGN KEY (CastID) REFERENCES CastMember(CastID) ON DELETE CASCADE
+);
